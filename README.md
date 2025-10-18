@@ -32,6 +32,18 @@
 </h3>
 
 <h2>
+    Main repo
+</h2>
+
+<h3>
+    <p>
+        <a href="https://github.com/Gobbledyglomp/full-stack-open">
+            https://github.com/Gobbledyglomp/full-stack-open
+        </a>
+    </p>
+</h3>
+
+<h2>
     License
 </h2>
 
