@@ -34,6 +34,17 @@ const App = () => {
   const handleNumberInput = event => setNewNumber(event.target.value)
   const handleFilterInput = event => setNewFilter(event.target.value)
 
+  // Send Notification
+  const notify = (type, text) => {
+    setMessage({
+      type: type,
+      text: text
+    })
+    setTimeout(() => {
+      setMessage({ text: null })
+    }, 3000)
+  }
+
   // Handle adding a person
   const handleSubmit = event => {
     event.preventDefault()
@@ -49,17 +60,14 @@ const App = () => {
       personService
         .create(newPerson)
         .then(added => {
-          setMessage({
-            text: `Added ${added.name}`,
-            type: 'message'
-          })
-          setTimeout(() => {
-            setMessage({ text: null })
-          }, 3000)
+          notify('message', `Added ${added.name}`)
 
           setPersons(persons.concat(added))
           setNewName('')
           setNewNumber('')
+        })
+        .catch(error => {
+          notify('error', `${error.response.data.error || error.message}`)
         })
     } 
     // If there is duplicate
@@ -71,13 +79,7 @@ const App = () => {
         personService
           .update(newPerson)
           .then(updated => {
-            setMessage({
-              text: `${updated.name}'s number was changed`,
-              type: 'message'
-            })
-            setTimeout(() => {
-              setMessage({ text: null })
-            }, 3000)
+            notify('message', `${updated.name}'s number was changed`)
 
             setPersons(persons.map(person => 
               person.id === updated.id
@@ -87,13 +89,7 @@ const App = () => {
           })
           .catch(error => {
             if (error.status === 404) {
-              setMessage({
-                text: `Information of ${newPerson.name} has already been removed from server`,
-                type: 'error'
-              })
-              setTimeout(() => {
-                setMessage({ text: null })
-              }, 3000)
+              notify('error', `Information of ${newPerson.name} has already been removed from server`)
 
               setPersons(persons.filter(person =>
                 person.id !== newPerson.id
@@ -101,7 +97,9 @@ const App = () => {
               setNewName('')
               setNewNumber('')
             } else {
-              throw error
+              const errorMessage = error.response.data.error || error.message
+              console.log(errorMessage)
+              notify('error', errorMessage)
             }
           })
       }
@@ -118,6 +116,21 @@ const App = () => {
         .remove(toBeDeleted)
         .then(() => {
           setPersons(persons.filter(person => person.id !== toBeDeleted.id))
+        })
+        .catch(error => {
+          if (error.status === 404) {
+            notify('error', `Information of ${toBeDeleted.name} has already been removed from server`)
+
+            setPersons(persons.filter(person =>
+              person.id !== toBeDeleted.id
+            ))
+            setNewName('')
+            setNewNumber('')
+          } else {
+              const errorMessage = error.response.data.error || error.message
+              console.log(errorMessage)
+              notify('error', errorMessage)
+          }
         })
     }
   }
