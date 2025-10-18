@@ -29,6 +29,7 @@ let persons = [
     }
 ]
 
+
 //
 // Middleware
 //
@@ -37,6 +38,7 @@ morgan.token('body', req => JSON.stringify(req.body))
 app.use(express.static('dist'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+
 
 //
 // Persons API
@@ -63,7 +65,7 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 // POST
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body
 
     if (!body.name) {
@@ -83,10 +85,11 @@ app.post('/api/persons', (req, res) => {
     person.save().then(result => {
         res.status(201).json(result)
     })
+    .catch(error => next(error))
 })
 
 // DELETE
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndDelete(req.params.id)
         .then(result => {
             if (!result) {
@@ -94,6 +97,7 @@ app.delete('/api/persons/:id', (req, res) => {
             }            
             res.status(204).end()
         })
+        .catch(error => next(error))
 })
 
 //
@@ -107,6 +111,30 @@ app.get('/info', (req, res) => {
         <p>${now}</p>
     `)
 })
+
+
+//
+// Middleware
+//
+
+// Unknown endpoint
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint)
+
+// Error handler
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+app.use(errorHandler)
+
 
 //
 // Start listening to PORT
