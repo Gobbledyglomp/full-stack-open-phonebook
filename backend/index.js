@@ -33,7 +33,7 @@ let persons = [
 //
 // Middleware
 //
-morgan.token('body', req => JSON.stringify(req.body))
+morgan.token('body', request => JSON.stringify(request.body))
 
 app.use(express.static('dist'))
 app.use(express.json())
@@ -45,37 +45,37 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 //
 
 // GET
-app.get('/api/persons', (req, res) => {
-    Person.find({}).then(response => {
-        res.json(response)
+app.get('/api/persons', (_request, response) => {
+    Person.find({}).then(result => {
+        response.json(result)
     })
 })
 
-app.get('/api/persons/:id', (req, res) => {
-    const id = req.params.id
+app.get('/api/persons/:id', (request, response) => {
+    const id = request.params.id
     const person = persons.find(person => person.id === id)
     
     if (person) {
-        res.json(person)
+        response.json(person)
     } else {
-        res.status(404).json({
+        response.status(404).json({
             error: `Person ${id} was not found`
         })
     }
 })
 
 // POST
-app.post('/api/persons', (req, res, next) => {
-    const body = req.body
+app.post('/api/persons', (request, response, next) => {
+    const body = request.body
 
     if (!body.name) {
-        return res.status(400).json({
+        return response.status(400).json({
             error: 'Name is missing'
         })
     }
     
     if (!body.number) {
-        return res.status(400).json({
+        return response.status(400).json({
             error: 'Number is missing'
         })
     }
@@ -83,19 +83,19 @@ app.post('/api/persons', (req, res, next) => {
     const person = new Person(body)
 
     person.save().then(result => {
-        res.status(201).json(result)
+        response.status(201).json(result)
     })
     .catch(error => next(error))
 })
 
 // DELETE
-app.delete('/api/persons/:id', (req, res, next) => {
-    Person.findByIdAndDelete(req.params.id)
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndDelete(request.params.id)
         .then(result => {
             if (!result) {
-                return res.status(404).end()
+                return response.status(404).end()
             }            
-            res.status(204).end()
+            response.status(204).end()
         })
         .catch(error => next(error))
 })
@@ -103,10 +103,10 @@ app.delete('/api/persons/:id', (req, res, next) => {
 //
 // Info
 //
-app.get('/info', (req, res) => {
+app.get('/info', (_request, response) => {
     const now = new Date()
 
-    res.send(`
+    response.send(`
         <p>Phonebook has info for ${persons.length} people</p>
         <p>${now}</p>
     `)
@@ -118,17 +118,17 @@ app.get('/info', (req, res) => {
 //
 
 // Unknown endpoint
-const unknownEndpoint = (req, res) => {
-  res.status(404).send({ error: 'unknown endpoint' })
+const unknownEndpoint = (_request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
 }
 app.use(unknownEndpoint)
 
 // Error handler
-const errorHandler = (error, req, res, next) => {
+const errorHandler = (error, _request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError') {
-    return res.status(400).send({ error: 'malformatted id' })
+    return response.status(400).send({ error: 'malformatted id' })
   } 
 
   next(error)
