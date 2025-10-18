@@ -87,10 +87,13 @@ app.post('/api/persons', (req, res) => {
 
 // DELETE
 app.delete('/api/persons/:id', (req, res) => {
-    const deleted = persons.find(person => person.id === req.params.id)
-    persons = persons.filter(person => person.id !== deleted.id)
-
-    res.status(204).end()
+    Person.findByIdAndDelete(req.params.id)
+        .then(result => {
+            if (!result) {
+                return res.status(404).end()
+            }            
+            res.status(204).end()
+        })
 })
 
 //
