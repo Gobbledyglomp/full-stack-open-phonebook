@@ -1,9 +1,9 @@
 const Info = ({ url }) => (
-    <div>
+    <p>
         <i>
             <a href={url}>Info</a>
         </i>
-    </div>
+    </p>
 )
 
 export default Info
