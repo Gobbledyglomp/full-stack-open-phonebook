@@ -100,6 +100,7 @@ app.get('/info', (_request, response) => {
         response.send(`
             <p>Phonebook has info for ${result.length} people</p>
             <p>${now}</p>
+            <i><a href="/">Back</a></i>
         `)
     })
 })

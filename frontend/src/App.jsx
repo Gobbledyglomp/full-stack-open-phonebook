@@ -3,6 +3,7 @@ import FilterNumbers from './components/FilterNumbers'
 import FilterForm from './components/FilterForm'
 import PersonForm from './components/PersonForm'
 import Notification from './components/Notification'
+import Info from './components/Info'
 import personService from './services/persons'
 
 const App = () => {
@@ -146,6 +147,8 @@ const App = () => {
         filter={newFilter}
         onDelete={handleDeletion}
       />
+
+      <Info url="/info" />
     </>
   )
 }
