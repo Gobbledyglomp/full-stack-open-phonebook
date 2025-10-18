@@ -1,12 +1,21 @@
 const Numbers = ({ persons, onDelete }) => (
-  <div>
-      {persons.map(person =>
-          <div key={person.name}>
-              {person.name} {person.number}
-              <button onClick={(e) => onDelete(e, person)}>Delete</button>
-          </div>
-      )}
-  </div>
+    <table>
+      <tbody>
+          {persons.map(person =>
+              <tr key={person.id}>                
+                  <td style={{'width': '115px'}}> 
+                      <label>{person.name}</label>
+                  </td>                
+                  <td style={{'width': '115px'}}> 
+                      <label>{person.number}</label>
+                  </td>
+                  <td>
+                      <button onClick={(e) => onDelete(e, person)}>Delete</button>
+                  </td>              
+              </tr>
+          )}
+      </tbody>
+  </table>
 )
 
 const FilterNumbers = ({ persons, filter, onDelete }) => (
