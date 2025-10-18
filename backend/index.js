@@ -63,10 +63,6 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 // POST
-const generateID = () => Math.ceil(
-    Math.random() * 1000000000000000
-)
-
 app.post('/api/persons', (req, res) => {
     const body = req.body
 
@@ -82,20 +78,11 @@ app.post('/api/persons', (req, res) => {
         })
     }
 
-    if (persons.find(person => person.name === body.name)) {
-        return res.status(400).json({
-            error: 'Name must be unique'
-        })
-    }
+    const person = new Person(body)
 
-    const person = {
-        id: `${generateID()}`,
-        name: body.name,
-        number: body.number
-    }
-    persons = persons.concat(person)
-
-    res.status(201).json(person)
+    person.save().then(result => {
+        res.status(201).json(result)
+    })
 })
 
 // DELETE
