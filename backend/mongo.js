@@ -3,8 +3,8 @@ const { Schema, model } = mongoose
 
 // In case of <3 arguments
 if (process.argv.length < 3) {
-  console.log('give password as argument')
-  process.exit(1)
+    console.log('give password as argument')
+    process.exit(1)
 }
 
 // Connect to the database
@@ -43,7 +43,7 @@ else {
         number: number
     })
 
-    person.save().then(result => {
+    person.save().then(() => {
         console.log(`added ${name} number ${number} to phonebook`)
         mongoose.connection.close()
     })
